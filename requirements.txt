@@ -1,0 +1,14 @@
+# Existing general requirements
+ccxt>=2.0.0
+pandas>=1.5.0
+numpy>=1.21.0
+
+# Technical Analysis requirements
+ta>=0.10.0
+matplotlib>=3.5.0
+
+# News and ML requirements
+newsapi-python>=0.2.6
+textblob>=0.15.3
+scikit-learn>=1.0.0
+requests>=2.28.0
