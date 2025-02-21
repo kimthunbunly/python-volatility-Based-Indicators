@@ -256,7 +256,7 @@ class TradingMonitor:
 
         # 5-minute prediction with countdown
         print("\n5-Minute Price Prediction:")
-        pred = self.calculate_multi_timeframe_predictions(
+        pred = self.calculate_five_minute_prediction(
             current_price, prediction, trading_signal)
 
         # Calculate time remaining and progress
@@ -349,6 +349,40 @@ class TradingMonitor:
         max_deviation = abs(target_price - initial_price)
         return max(0, (1 - current_deviation/max_deviation) * 100) if max_deviation > 0 else 0
 
+    def calculate_five_minute_prediction(self, current_price, prediction, trading_signal):
+        """Calculate 5-minute price prediction"""
+        current_time = datetime.now()
+
+        # If we don't have a prediction or the current one has expired
+        if (self.current_prediction is None or
+            self.prediction_start_time is None or
+            (current_time - self.prediction_start_time).total_seconds() >= self.prediction_duration):
+
+            # Calculate new prediction
+            atr = abs(trading_signal['take_profit'] - trading_signal['entry']) / 3
+            trend_direction = 1 if prediction['prediction'] == 'BULLISH' else -1
+            confidence = prediction['confidence']
+
+            estimated_move = atr * confidence * trend_direction
+            predicted_price = current_price + estimated_move
+
+            volatility = atr * 0.3
+            upper_bound = predicted_price + volatility
+            lower_bound = predicted_price - volatility
+
+            self.current_prediction = {
+                'price': predicted_price,
+                'upper': upper_bound,
+                'lower': lower_bound,
+                'change_percent': (predicted_price - current_price) / current_price * 100,
+                'upper_percent': (upper_bound - current_price) / current_price * 100,
+                'lower_percent': (lower_bound - current_price) / current_price * 100,
+                'initial_price': current_price
+            }
+            self.prediction_start_time = current_time
+
+        return self.current_prediction
+
     def run(self):
         print(f"Starting {self.symbol} Trading Monitor")
         print(f"Interval: {self.interval_seconds} seconds")
@@ -363,7 +397,8 @@ class TradingMonitor:
                     prediction, trading_signal = self.predictor.predict()
 
                 current_price = prediction['current_price']
-                pred_target = self.calculate_multi_timeframe_predictions(
+                # Update method call to use new name
+                pred_target = self.calculate_five_minute_prediction(
                     current_price, prediction, trading_signal)
 
                 # Process trades
