@@ -438,9 +438,9 @@ if __name__ == "__main__":
     INTERVAL_SECONDS = 5
 
     # Monitor BTC
-    # btc_monitor = TradingMonitor(NEWS_API_KEY, INTERVAL_SECONDS, 'BTC')
-    # btc_monitor.run()
+    btc_monitor = TradingMonitor(NEWS_API_KEY, INTERVAL_SECONDS, 'BTC')
+    btc_monitor.run()
 
     # To monitor ETH instead, use:
-    eth_monitor = TradingMonitor(NEWS_API_KEY, INTERVAL_SECONDS, 'ETH')
-    eth_monitor.run()
+    # eth_monitor = TradingMonitor(NEWS_API_KEY, INTERVAL_SECONDS, 'ETH')
+    # eth_monitor.run()
